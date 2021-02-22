@@ -13,22 +13,25 @@ bool Activity::operator<(const Activity &a2) const {
 
 std::vector<Activity> earliestFinishScheduling(std::vector<Activity> A) {
 
+    std::vector<Activity> vec;
+
     std::sort(A.begin(), A.end(), [](const Activity & a1,const Activity & a2){
         return a1.finish < a2.finish;
     });
 
-    for (int i = 0; i < A.size(); ++i) {
-        for(auto it = A.begin()+i+1; it != A.end();){
-            if(it->start <= A[i].finish && it->finish >= A[i].finish){
-                it = A.erase(it);
-            }
-            else
-                break;
+    unsigned int lastFinish = -1;
+
+    for (auto & act : A) {
+        if(act.start <= lastFinish && act.finish >= lastFinish){
+            continue;
+        }
+        else{
+            vec.push_back(act);
+            lastFinish = act.finish;
         }
     }
 
-
-    return A;
+    return vec;
 }
 
 /// TESTS ///
