@@ -1,8 +1,10 @@
 #include <iostream>
 #include "gtest/gtest.h"
+#include "TP2/exercises.h"
 
 int main(int argc, char **argv) {
-    std::cout << "Running all tests for TP1..." << std::endl;
+
+    std::cout << "Running all tests..." << std::endl;
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

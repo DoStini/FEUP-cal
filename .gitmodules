@@ -1,3 +1,6 @@
 [submodule "practical/p01/lib/googletest"]
 	path = practical/p01/lib/googletest
 	url = https://github.com/google/googletest
+[submodule "practical/lib/googletest"]
+	path = practical/lib/googletest
+	url = https://github.com/google/googletest
