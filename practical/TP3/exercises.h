@@ -44,5 +44,6 @@ typedef Result (*NP_FUNC)(std::vector<Point> &vp);
 
 // Ex 2
 int maxSubsequenceDC(int A[], unsigned int n, int &i, int &j);
+int maxSubs(int A[], int& i, int& j);
 
 #endif //CAL_TP3_CLASSES_EXERCISES_H
