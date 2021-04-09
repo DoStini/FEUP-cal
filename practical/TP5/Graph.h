@@ -134,7 +134,6 @@ void Vertex<T>::addEdge(Vertex<T> *d, double w) {
  */
 template <class T>
 bool Graph<T>::removeEdge(const T &sourc, const T &dest) {
-    // TODO (5 lines)
     Vertex<T> *src = findVertex(sourc);
     if (src == NULL) return false;
     Vertex<T> temp = Vertex<T>(dest);
@@ -171,9 +170,11 @@ bool Graph<T>::removeVertex(const T &in) {
     for (auto it = vertexSet.begin(); it != vertexSet.end(); it++) {
         if ((*it)->info == in) {
             found = true;
+            // delete (*it);
             it = vertexSet.erase(it);
         }
-        (*it)->removeEdgeTo(&temp);
+        else
+            (*it)->removeEdgeTo(&temp);
     }
     return found;
 }
@@ -268,15 +269,31 @@ std::vector<T> Graph<T>::bfs(const T & source) const {
 template<class T>
 std::vector<T> Graph<T>::topsort() const {
     std::vector<T> res;
-    bool finished;
-    while (!finished) {
-        finished = true;
-        for (auto v: vertexSet) {
-            if ()
+    std::queue<Vertex<T> *> vertices;
+
+    for (auto v: vertexSet) {
+        v->indegree = 0;
+    }
+    for (auto v: vertexSet) {
+        for (auto e: v->adj)
+            e.dest->indegree++;
+    }
+    for (auto v: vertexSet)
+        if (v->indegree == 0) {
+            vertices.push(v);
+        }
+
+
+    while (!vertices.empty()) {
+        Vertex<T> *curr = vertices.front(); vertices.pop();
+        res.push_back(curr->info);
+        for (auto e: curr->adj) {
+            if (--e.dest->indegree == 0)
+                vertices.push(e.dest);
         }
     }
 
-    return res;
+    return res.size() == vertexSet.size() ? res : std::vector<T>();
 }
 
 /****************** 3a) maxNewChildren (HOME WORK)  ********************/
@@ -292,7 +309,38 @@ std::vector<T> Graph<T>::topsort() const {
 template <class T>
 int Graph<T>::maxNewChildren(const T & source, T &inf) const {
     // TODO (28 lines, mostly reused)
-    return 0;
+    for (auto v: vertexSet)
+        v->visited = false;
+
+    std::vector<T> res;
+    std::queue<Vertex<T>*> vertices;
+
+    Vertex<T> * v = findVertex(source);
+    if (v != NULL) {
+        vertices.push(v);
+        v->visited = true;
+    }
+
+    int max = 0;
+
+    while (!vertices.empty()) {
+        v = vertices.front(); vertices.pop();
+        res.push_back(v->info);
+        int curr = 0;
+        for (auto e: v->adj) {
+            Vertex<T> *dest = e.dest;
+            if (!dest->visited) {
+                curr ++;
+                vertices.push(dest);
+                dest->visited = true;
+            }
+        }
+        if (curr > max) {
+            max = curr;
+            inf = v->info;
+        }
+    }
+    return max;
 }
 
 /****************** 3b) isDAG   (HOME WORK)  ********************/
@@ -308,7 +356,19 @@ int Graph<T>::maxNewChildren(const T & source, T &inf) const {
 template <class T>
 bool Graph<T>::isDAG() const {
     // TODO (9 lines, mostly reused)
-    // HINT: use the auxiliary field "processing" to mark the vertices in the stack.
+    for (auto v: vertexSet) {
+        v->visited = false;
+        v->processing = false;
+    }
+    for (auto v: vertexSet) {
+        if (!v->visited) {
+            v->visited = true;
+            v->processing = true;
+            if (!dfsIsDAG(v)) return false;
+            v->processing = false;
+        }
+    }
+
     return true;
 }
 
@@ -318,7 +378,17 @@ bool Graph<T>::isDAG() const {
  */
 template <class T>
 bool Graph<T>::dfsIsDAG(Vertex<T> *v) const {
-    // TODO (12 lines, mostly reused)
+    for (auto e: v->adj) {
+        Vertex<T> *vertex = e.dest;
+        if(vertex->processing) return false;
+        if (!vertex->visited) {
+            vertex->visited = true;
+            vertex->processing = true;
+            if(!dfsIsDAG(vertex))
+                return false;
+            vertex->processing = false;
+        }
+    }
     return true;
 }
 

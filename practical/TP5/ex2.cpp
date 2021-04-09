@@ -90,4 +90,7 @@ TEST(TP5_Ex2c, test_topsort) {
     for( unsigned int i = 0; i < topOrder.size(); i++)
         ss << topOrder[i] << " ";
     EXPECT_EQ("", ss.str());
+
+    myGraph.addEdge(6, 7, 0);
+    EXPECT_EQ("", ss.str());
 }
